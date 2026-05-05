@@ -1,0 +1,691 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #1f2937;
+  background: #f3f6fb;
+  line-height: 1.4;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.month-nav button {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.weekday {
+  text-align: center;
+  font-weight: 700;
+  color: #475569;
+  padding: 8px 0;
+}
+
+.day {
+  background: #ffffff;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  min-height: 100px;
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.day.empty {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.day-header span {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.clear-day-btn {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #dc2626;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.clear-day-btn:hover {
+  background: #fecaca;
+  border-color: #dc2626;
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5px;
+  margin-bottom: 4px;
+}
+
+.entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px 20px;
+  gap: 1.5px;
+  padding: 1.5px;
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+}
+
+
+.name-input,
+.days-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 3px 5px;
+  background: #ffffff;
+  font-size: 12px;
+}
+
+.days-input {
+  text-align: center;
+  padding: 4px 2px;
+}
+
+/* 数字入力欄の増減ボタンを非表示 */
+.days-input::-webkit-outer-spin-button,
+.days-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.days-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.name-input:read-only {
+  background: #f8fafc;
+  color: #1f2937;
+}
+
+
+.action-buttons-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.custom-btn {
+  width: 20px;
+  height: 10px;
+  border: 1px solid #3b82f6;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 3px;
+  padding: 0;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.custom-btn:hover {
+  background: #bfdbfe;
+  border-color: #1e40af;
+}
+
+.remove-btn {
+  width: 20px;
+  height: 10px;
+  border: 1px solid #ef4444;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 3px;
+  padding: 0;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-btn:hover {
+  background: #fecaca;
+  border-color: #dc2626;
+}
+
+
+.add-entry-btn {
+  width: 100%;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.add-entry-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+/* カスタムポップオーバー */
+.custom-popover {
+  position: fixed;
+  background: white;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 320px;
+  max-width: 400px;
+}
+
+.custom-popover-header {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #1e40af;
+  border-bottom: 1px solid #dbeafe;
+  padding-bottom: 8px;
+}
+
+.custom-popover-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.custom-popover-tab {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.custom-popover-tab:hover {
+  color: #3b82f6;
+}
+
+.custom-popover-tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.custom-popover-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 150px;
+}
+
+.custom-tab-content {
+  display: none;
+}
+
+.custom-tab-content.active {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.custom-popover-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.custom-popover-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.custom-popover-field input {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.custom-popover-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.custom-popover-btn {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.custom-popover-btn.primary {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.custom-popover-btn.primary:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.custom-popover-btn.secondary {
+  background: white;
+  color: #475569;
+}
+
+.custom-popover-btn.secondary:hover {
+  background: #f8fafc;
+}
+
+.custom-popover-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
+
+/* カレンダー選択 */
+.calendar-picker {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.calendar-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 4px 0;
+}
+
+.calendar-picker-header button {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.calendar-picker-header button:hover {
+  background: #e2e8f0;
+}
+
+.calendar-picker-month {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.calendar-day-label {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 4px 0;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.2s;
+}
+
+.calendar-day:hover {
+  background: #f1f5f9;
+  border-color: #3b82f6;
+}
+
+.calendar-day.selected {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.calendar-day.empty {
+  border: none;
+  cursor: default;
+  background: transparent;
+}
+
+.calendar-day.empty:hover {
+  background: transparent;
+  border: none;
+}
+
+.calendar-day.today {
+  border-color: #f59e0b;
+  font-weight: 600;
+}
+
+.selected-dates-info {
+  font-size: 12px;
+  color: #64748b;
+  padding: 8px;
+  background: #f8fafc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .calendar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .page-header {
+    flex-direction: column;
+  }
+
+  .calendar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 16px;
+  }
+
+  .calendar {
+    grid-template-columns: 1fr;
+  }
+
+  .day {
+    min-height: auto;
+  }
+}
+
+/* ヘッダーコントロール */
+.header-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.storage-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.storage-indicator.server {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.storage-indicator.local {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* 印刷用スタイル */
+.print-header {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  body {
+    background: white;
+  }
+
+  .page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-header {
+    display: block;
+    text-align: center;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+
+  .print-header h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+    page-break-inside: avoid;
+    height: calc(100vh - 40px);
+  }
+
+  .weekday {
+    font-size: 10px;
+    padding: 2px 0;
+    border-bottom: 1px solid #1f2937;
+  }
+
+  .day {
+    border: 1px solid #9ca3af;
+    border-radius: 4px;
+    min-height: 0;
+    height: 100%;
+    padding: 4px;
+    box-shadow: none;
+    page-break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .day-header {
+    margin-bottom: 4px;
+    border-bottom: 1px solid #d1d5db;
+    padding-bottom: 2px;
+    flex-shrink: 0;
+  }
+
+  .day-header span {
+    font-size: 12px;
+  }
+
+  .day-header small {
+    font-size: 8px;
+  }
+
+  .entries {
+    gap: 3px;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .entry-row {
+    padding: 3px;
+    gap: 3px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  
+  .action-buttons-cell {
+    flex-direction: column;
+  }
+
+
+  .name-input {
+    border: none;
+    padding: 2px 4px;
+    font-size: 9px;
+    background: white;
+    line-height: 1.2;
+  }
+  
+  /* 次回入力欄を非表示 */
+  .days-input {
+    display: none;
+  }
+  
+  /* プレースホルダーを非表示 */
+  .name-input::placeholder {
+    color: transparent;
+  }
+
+  .name-input:read-only {
+    background: white;
+  }
+
+  .remove-btn,
+  .add-entry-btn,
+  .custom-btn,
+  .clear-day-btn {
+    display: none;
+  }
+
+  /* 入力フィールドの値を表示 */
+  input {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+  }
+}
+
+@media print and (max-width: 1200px) {
+  .calendar {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
