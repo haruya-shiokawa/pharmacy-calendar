@@ -400,15 +400,14 @@ function handleInputChange(event) {
   if (field === 'days') {
     const value = event.target.value.trim()
     const slot = state[date].slots[slotIndex]
+    const wasAuto = slot.isAuto
     
     slot.days = value === '' ? '' : Math.max(0, Number(value))
     // 新規フラグを削除
     delete slot.isNew
     
-    // 自動エントリーの場合、手動エントリーに変換し、元の手動エントリーの日数をクリア
-    if (slot.isAuto) {
-      slot.isAuto = false
-      
+    // 自動エントリーの場合、元の手動エントリーの日数をクリアしてから手動エントリーに変換
+    if (wasAuto) {
       // この自動エントリーを生成した元の手動エントリーを探して日数をクリア
       for (const [sourceDate, sourceDayData] of Object.entries(state)) {
         if (sourceDate === date) continue // 同じ日はスキップ
@@ -425,6 +424,9 @@ function handleInputChange(event) {
           }
         })
       }
+      
+      // 元の手動エントリーの日数をクリアした後に、手動エントリーに変換
+      slot.isAuto = false
     }
   }
 
