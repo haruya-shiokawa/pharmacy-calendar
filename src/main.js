@@ -405,9 +405,26 @@ function handleInputChange(event) {
     // 新規フラグを削除
     delete slot.isNew
     
-    // 自動エントリーの場合、手動エントリーに変換
+    // 自動エントリーの場合、手動エントリーに変換し、元の手動エントリーの日数をクリア
     if (slot.isAuto) {
       slot.isAuto = false
+      
+      // この自動エントリーを生成した元の手動エントリーを探して日数をクリア
+      for (const [sourceDate, sourceDayData] of Object.entries(state)) {
+        if (sourceDate === date) continue // 同じ日はスキップ
+        
+        sourceDayData.slots.forEach((sourceSlot) => {
+          if (!sourceSlot.isAuto &&
+              sourceSlot.name === slot.name &&
+              sourceSlot.days !== '') {
+            const targetDate = formatDate(addDays(parseDate(sourceDate), Number(sourceSlot.days)))
+            if (targetDate === date) {
+              // この手動エントリーが現在の自動エントリーを生成していた
+              sourceSlot.days = ''
+            }
+          }
+        })
+      }
     }
   }
 
