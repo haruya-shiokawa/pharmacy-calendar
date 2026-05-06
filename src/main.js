@@ -1,6 +1,7 @@
 import './style.css'
 
 const STORAGE_KEY = 'pharmacy-calendar-data'
+const BUTTON_LABELS_KEY = 'pharmacy-calendar-button-labels'
 // 本番環境とローカル環境でAPIのURLを切り替え
 const API_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:3001/api/data'
@@ -12,11 +13,22 @@ let currentYear = today.getFullYear()
 let currentMonth = today.getMonth()
 let state = {}
 let useServerStorage = false
+let buttonLabels = ['ア', 'イ', 'ウ', 'エ', '']
 
 // 初期化
 init()
 
 async function init() {
+  // ボタンラベルを読み込み
+  const savedLabels = localStorage.getItem(BUTTON_LABELS_KEY)
+  if (savedLabels) {
+    try {
+      buttonLabels = JSON.parse(savedLabels)
+    } catch (e) {
+      console.error('ボタンラベルの読み込みに失敗しました', e)
+    }
+  }
+  
   // サーバーからデータを取得試行
   try {
     const response = await fetch(API_URL)
@@ -55,8 +67,40 @@ function render() {
           <button type="button" id="clear-month-data" class="action-btn">🗑️ 今月のデータ削除</button>
           <button type="button" id="export-csv" class="action-btn">📊 CSV出力</button>
           <button type="button" id="print-calendar" class="action-btn">🖨️ 印刷</button>
+          <button type="button" id="toggle-label-settings" class="action-btn">⚙️ ボタン設定</button>
         </div>
       </header>
+
+      <div id="label-settings" class="label-settings no-print" style="display: none;">
+        <div class="label-settings-header">
+          <h3>追加ボタンのラベル設定</h3>
+          <button type="button" id="close-label-settings" class="close-btn">×</button>
+        </div>
+        <div class="label-settings-body">
+          <div class="label-input-group">
+            <label>ボタン1:</label>
+            <input type="text" id="label-0" value="${escapeHtml(buttonLabels[0])}" maxlength="2" />
+          </div>
+          <div class="label-input-group">
+            <label>ボタン2:</label>
+            <input type="text" id="label-1" value="${escapeHtml(buttonLabels[1])}" maxlength="2" />
+          </div>
+          <div class="label-input-group">
+            <label>ボタン3:</label>
+            <input type="text" id="label-2" value="${escapeHtml(buttonLabels[2])}" maxlength="2" />
+          </div>
+          <div class="label-input-group">
+            <label>ボタン4:</label>
+            <input type="text" id="label-3" value="${escapeHtml(buttonLabels[3])}" maxlength="2" />
+          </div>
+          <div class="label-settings-note">
+            ※ 5つ目のボタンは常に「+」です
+          </div>
+        </div>
+        <div class="label-settings-footer">
+          <button type="button" id="save-label-settings" class="action-btn primary">保存</button>
+        </div>
+      </div>
 
       <div class="print-header">
         <h1>${monthLabel}</h1>
@@ -91,6 +135,28 @@ function bindEvents() {
   document.querySelector('#clear-month-data').addEventListener('click', clearMonthData)
   document.querySelector('#export-csv').addEventListener('click', exportToCSV)
   document.querySelector('#print-calendar').addEventListener('click', printCalendar)
+  
+  // ボタン設定の表示/非表示
+  document.querySelector('#toggle-label-settings').addEventListener('click', () => {
+    const settings = document.querySelector('#label-settings')
+    settings.style.display = settings.style.display === 'none' ? 'block' : 'none'
+  })
+  
+  document.querySelector('#close-label-settings').addEventListener('click', () => {
+    document.querySelector('#label-settings').style.display = 'none'
+  })
+  
+  // ボタンラベルの保存
+  document.querySelector('#save-label-settings').addEventListener('click', () => {
+    buttonLabels[0] = document.querySelector('#label-0').value.trim()
+    buttonLabels[1] = document.querySelector('#label-1').value.trim()
+    buttonLabels[2] = document.querySelector('#label-2').value.trim()
+    buttonLabels[3] = document.querySelector('#label-3').value.trim()
+    
+    localStorage.setItem(BUTTON_LABELS_KEY, JSON.stringify(buttonLabels))
+    document.querySelector('#label-settings').style.display = 'none'
+    render()
+  })
 
   document.querySelectorAll('.name-input, .days-input').forEach((input) => {
     input.addEventListener('change', handleInputChange)
@@ -121,10 +187,16 @@ function bindEvents() {
 
 function handleAddEntry(event) {
   const date = event.target.dataset.date
+  const label = event.target.dataset.label || '' // ボタンのラベル（ア、イ、ウ、エ、または空）
   ensureDay(date)
-  // 空のスロットを追加し、名前欄に「()」を自動入力
+  
+  // ラベルに応じて括弧内の文字を設定
+  const innerText = label ? label : ''
+  const name = `(${innerText})`
+  
+  // 空のスロットを追加し、名前欄に「(ラベル)」を自動入力
   state[date].slots.push({
-    name: '()',
+    name: name,
     days: '',
     isAuto: false,
     isNew: true, // 新規追加フラグ
@@ -140,8 +212,9 @@ function handleAddEntry(event) {
       const lastInput = inputs[inputs.length - 1]
       if (lastInput) {
         lastInput.focus()
-        // カーソルを括弧の中（1文字目の位置）に配置
-        lastInput.setSelectionRange(1, 1)
+        // カーソルを括弧の中（ラベルの後）に配置
+        const cursorPos = 1 + innerText.length
+        lastInput.setSelectionRange(cursorPos, cursorPos)
       }
     }
   }, 0)
@@ -628,7 +701,13 @@ function buildCalendar(year, month, data) {
             })
             .join('')}
         </div>
-        <button class="add-entry-btn" data-date="${date}">+</button>
+        <div class="add-entry-buttons">
+          <button class="add-entry-btn" data-date="${date}" data-label="${escapeHtml(buttonLabels[0])}">${escapeHtml(buttonLabels[0]) || '　'}</button>
+          <button class="add-entry-btn" data-date="${date}" data-label="${escapeHtml(buttonLabels[1])}">${escapeHtml(buttonLabels[1]) || '　'}</button>
+          <button class="add-entry-btn" data-date="${date}" data-label="${escapeHtml(buttonLabels[2])}">${escapeHtml(buttonLabels[2]) || '　'}</button>
+          <button class="add-entry-btn" data-date="${date}" data-label="${escapeHtml(buttonLabels[3])}">${escapeHtml(buttonLabels[3]) || '　'}</button>
+          <button class="add-entry-btn" data-date="${date}" data-label="">+</button>
+        </div>
       </article>
     `
   }

@@ -228,8 +228,14 @@ button {
 }
 
 
-.add-entry-btn {
+.add-entry-buttons {
+  display: flex;
+  gap: 2px;
   width: 100%;
+}
+
+.add-entry-btn {
+  flex: 1;
   border: 1px dashed #cbd5e1;
   background: #f8fafc;
   color: #475569;
@@ -552,6 +558,97 @@ button {
   color: #92400e;
 }
 
+/* ボタンラベル設定 */
+.label-settings {
+  background: white;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.label-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dbeafe;
+}
+
+.label-settings-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #1e40af;
+}
+
+.close-btn {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #dc2626;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  background: #fecaca;
+}
+
+.label-settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label-input-group label {
+  min-width: 80px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.label-input-group input {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.label-settings-note {
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.label-settings-footer {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-btn.primary {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.action-btn.primary:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
 /* 印刷用スタイル */
 .print-header {
   display: none;
@@ -672,6 +769,7 @@ button {
 
   .remove-btn,
   .add-entry-btn,
+  .add-entry-buttons,
   .custom-btn,
   .clear-day-btn {
     display: none;
