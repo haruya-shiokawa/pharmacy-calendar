@@ -400,23 +400,14 @@ function handleInputChange(event) {
   if (field === 'days') {
     const value = event.target.value.trim()
     const slot = state[date].slots[slotIndex]
-    const wasAuto = slot.isAuto
     
     slot.days = value === '' ? '' : Math.max(0, Number(value))
     // 新規フラグを削除
     delete slot.isNew
     
-    // 自動エントリーの場合、そのスロットを削除して手動エントリーとして再構築
-    if (wasAuto) {
-      // 自動エントリーを削除
-      state[date].slots.splice(slotIndex, 1)
-      
-      // 手動エントリーとして追加（名前と日数を保持）
-      state[date].slots.push({
-        name: slot.name,
-        days: slot.days,
-        isAuto: false
-      })
+    // 自動エントリーの場合、手動エントリーに変換
+    if (slot.isAuto) {
+      slot.isAuto = false
     }
   }
 
