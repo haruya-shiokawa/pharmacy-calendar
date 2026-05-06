@@ -14,7 +14,7 @@ dist-ssr
 
 # Data files
 data/
-*.json
+calendar-data.json
 
 # Editor directories and files
 .vscode/*
