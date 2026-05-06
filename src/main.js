@@ -59,7 +59,7 @@ function render() {
       </header>
 
       <div class="print-header">
-        <h1>患者予定カレンダー - ${monthLabel}</h1>
+        <h1>${monthLabel}</h1>
       </div>
 
       <section class="calendar">${calendar}</section>
@@ -646,7 +646,7 @@ function exportToCSV() {
   const url = URL.createObjectURL(blob)
   
   link.setAttribute('href', url)
-  link.setAttribute('download', `患者予定カレンダー_${year}年${month + 1}月.csv`)
+  link.setAttribute('download', `${year}年${month + 1}月.csv`)
   link.style.visibility = 'hidden'
   document.body.appendChild(link)
   link.click()
