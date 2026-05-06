@@ -96,6 +96,12 @@ function bindEvents() {
     input.addEventListener('change', handleInputChange)
   })
 
+  // 名前入力欄にblurイベントとkeydownイベントを追加（「 様」を自動追加）
+  document.querySelectorAll('.name-input').forEach((input) => {
+    input.addEventListener('blur', handleNameBlur)
+    input.addEventListener('keydown', handleNameKeydown)
+  })
+
   document.querySelectorAll('.add-entry-btn').forEach((btn) => {
     btn.addEventListener('click', handleAddEntry)
   })
@@ -116,9 +122,9 @@ function bindEvents() {
 function handleAddEntry(event) {
   const date = event.target.dataset.date
   ensureDay(date)
-  // 空のスロットを追加し、一時的にスペースを入れて表示されるようにする
+  // 空のスロットを追加し、名前欄に「()」を自動入力
   state[date].slots.push({
-    name: '',
+    name: '()',
     days: '',
     isAuto: false,
     isNew: true, // 新規追加フラグ
@@ -126,7 +132,7 @@ function handleAddEntry(event) {
   saveState()
   render()
   
-  // 新しく追加された入力欄にフォーカス
+  // 新しく追加された入力欄にフォーカスし、カーソルを括弧の中に配置
   setTimeout(() => {
     const entries = document.querySelector(`[data-date="${date}"]`)
     if (entries) {
@@ -134,6 +140,8 @@ function handleAddEntry(event) {
       const lastInput = inputs[inputs.length - 1]
       if (lastInput) {
         lastInput.focus()
+        // カーソルを括弧の中（1文字目の位置）に配置
+        lastInput.setSelectionRange(1, 1)
       }
     }
   }, 0)
@@ -371,6 +379,53 @@ function showCustomPopover(buttonElement, date, slotIndex, slot) {
   // カレンダーを初期表示
   renderCalendarPicker()
 }
+function handleNameBlur(event) {
+  const { date, index } = event.target.dataset
+  const slotIndex = Number(index)
+  
+  if (!state[date] || !state[date].slots[slotIndex]) {
+    return
+  }
+  
+  const slot = state[date].slots[slotIndex]
+  let name = event.target.value.trim()
+  
+  // 空の場合や「()」のみの場合は何もしない
+  if (!name || name === '()') {
+    return
+  }
+  
+  // 既に「様」で終わっている場合は何もしない
+  if (name.endsWith('様')) {
+    return
+  }
+  
+  // 末尾に「 様」を追加
+  name = name + ' 様'
+  slot.name = name
+  event.target.value = name
+  
+  saveState()
+}
+
+function handleNameKeydown(event) {
+  // Enterキーが押された時
+  if (event.key === 'Enter') {
+    event.preventDefault() // デフォルトの動作を防ぐ
+    handleNameBlur(event) // 「 様」を追加
+    
+    // 次回入力欄にフォーカスを移動
+    const { date, index } = event.target.dataset
+    const slotIndex = Number(index)
+    const daysInput = document.querySelector(
+      `.days-input[data-date="${date}"][data-index="${slotIndex}"]`
+    )
+    if (daysInput) {
+      daysInput.focus()
+    }
+  }
+}
+
 
 function handleInputChange(event) {
   const { date, index, field } = event.target.dataset
