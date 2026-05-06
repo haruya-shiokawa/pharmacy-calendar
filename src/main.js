@@ -399,15 +399,19 @@ function handleInputChange(event) {
 
   if (field === 'days') {
     const value = event.target.value.trim()
-    state[date].slots[slotIndex].days = value === '' ? '' : Math.max(0, Number(value))
+    const slot = state[date].slots[slotIndex]
+    slot.days = value === '' ? '' : Math.max(0, Number(value))
     // 新規フラグを削除
-    delete state[date].slots[slotIndex].isNew
+    delete slot.isNew
+    
+    // 自動エントリーの場合、手動エントリーに変換してから再構築
+    if (slot.isAuto) {
+      slot.isAuto = false
+    }
   }
 
-  // 手動エントリーの変更時のみ自動エントリーを再構築
-  if (!state[date].slots[slotIndex].isAuto) {
-    rebuildAutoEntries()
-  }
+  // 名前または日数が変更された場合は自動エントリーを再構築
+  rebuildAutoEntries()
   
   saveState()
   render()
