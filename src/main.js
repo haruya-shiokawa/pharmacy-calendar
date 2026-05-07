@@ -65,10 +65,12 @@ function render() {
         <div class="action-buttons">
           ${storageIndicator}
           <button type="button" id="clear-month-data" class="action-btn">🗑️ 今月のデータ削除</button>
+          <button type="button" id="import-csv" class="action-btn">📥 CSV読込</button>
           <button type="button" id="export-csv" class="action-btn">📊 CSV出力</button>
           <button type="button" id="print-calendar" class="action-btn">🖨️ 印刷</button>
           <button type="button" id="toggle-label-settings" class="action-btn">⚙️ ボタン設定</button>
         </div>
+        <input type="file" id="csv-file-input" accept=".csv" style="display: none;" />
       </header>
 
       <div id="label-settings" class="label-settings no-print" style="display: none;">
@@ -133,6 +135,10 @@ function bindEvents() {
   })
 
   document.querySelector('#clear-month-data').addEventListener('click', clearMonthData)
+  document.querySelector('#import-csv').addEventListener('click', () => {
+    document.querySelector('#csv-file-input').click()
+  })
+  document.querySelector('#csv-file-input').addEventListener('change', handleCSVImport)
   document.querySelector('#export-csv').addEventListener('click', exportToCSV)
   document.querySelector('#print-calendar').addEventListener('click', printCalendar)
   
@@ -809,6 +815,118 @@ function exportToCSV() {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+}
+
+// CSV読込機能
+function handleCSVImport(event) {
+  const file = event.target.files[0]
+  if (!file) {
+    return
+  }
+  
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    try {
+      const text = e.target.result
+      const lines = text.split('\n')
+      
+      // ヘッダー行をスキップ
+      const dataLines = lines.slice(1).filter(line => line.trim())
+      
+      if (dataLines.length === 0) {
+        alert('CSVファイルにデータがありません')
+        return
+      }
+      
+      const confirmed = confirm(
+        `${dataLines.length}件のデータを読み込みます。\n既存のデータに追加されます。よろしいですか？`
+      )
+      
+      if (!confirmed) {
+        event.target.value = '' // ファイル選択をリセット
+        return
+      }
+      
+      let importCount = 0
+      
+      dataLines.forEach(line => {
+        // CSVの各行をパース（カンマ区切り、ダブルクォートで囲まれた値に対応）
+        const values = parseCSVLine(line)
+        
+        if (values.length < 3) {
+          return // データが不足している行はスキップ
+        }
+        
+        const date = values[0].trim()
+        const name = values[2].trim()
+        const days = values[3] ? values[3].trim() : ''
+        
+        if (!date || !name) {
+          return // 日付または名前が空の行はスキップ
+        }
+        
+        // 日付の形式チェック（YYYY-MM-DD）
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          return
+        }
+        
+        ensureDay(date)
+        
+        // 同じ名前のエントリーが既に存在するかチェック
+        const exists = state[date].slots.some(s => s.name === name)
+        
+        if (!exists) {
+          state[date].slots.push({
+            name: name,
+            days: days === '' ? '' : Number(days),
+            isAuto: false,
+          })
+          importCount++
+        }
+      })
+      
+      if (importCount > 0) {
+        rebuildAutoEntries()
+        saveState()
+        render()
+        alert(`${importCount}件のデータを読み込みました`)
+      } else {
+        alert('読み込めるデータがありませんでした')
+      }
+      
+    } catch (error) {
+      console.error('CSV読み込みエラー:', error)
+      alert('CSVファイルの読み込みに失敗しました')
+    }
+    
+    // ファイル選択をリセット
+    event.target.value = ''
+  }
+  
+  reader.readAsText(file, 'UTF-8')
+}
+
+// CSV行のパース（ダブルクォートで囲まれた値に対応）
+function parseCSVLine(line) {
+  const values = []
+  let current = ''
+  let inQuotes = false
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i]
+    
+    if (char === '"') {
+      inQuotes = !inQuotes
+    } else if (char === ',' && !inQuotes) {
+      values.push(current)
+      current = ''
+    } else {
+      current += char
+    }
+  }
+  
+  values.push(current)
+  return values
 }
 
 // 印刷機能
