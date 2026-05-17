@@ -727,17 +727,22 @@ button {
   }
 
   .entries {
-    gap: 3px;
+    gap: 0.5px;
     flex-grow: 1;
     overflow: hidden;
   }
 
   .entry-row {
-    padding: 3px;
-    gap: 3px;
+    padding: 0px 2px;
+    gap: 2px;
     background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    border: 0.5px solid #e5e7eb;
     grid-template-columns: minmax(0, 1fr);
+    min-height: auto;
+  }
+  
+  .entry-row.has-days {
+    grid-template-columns: minmax(0, 1fr) 30px;
   }
   
   .action-buttons-cell {
@@ -747,15 +752,26 @@ button {
 
   .name-input {
     border: none;
-    padding: 2px 4px;
+    padding: 1px 3px;
     font-size: 9px;
     background: white;
-    line-height: 1.2;
+    line-height: 1.1;
   }
   
-  /* 次回入力欄を非表示 */
+  /* 次回入力欄のデフォルトは非表示 */
   .days-input {
     display: none;
+  }
+  
+  /* 次回日数が入力されている場合のみ表示 */
+  .entry-row.has-days .days-input {
+    display: block;
+    border: none;
+    padding: 1px 2px;
+    font-size: 9px;
+    background: white;
+    line-height: 1.1;
+    text-align: center;
   }
   
   /* プレースホルダーを非表示 */

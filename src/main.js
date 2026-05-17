@@ -677,7 +677,7 @@ function buildCalendar(year, month, data) {
               }
               const isAuto = slot.isAuto ?? false
               return `
-                <div class="entry-row">
+                <div class="entry-row ${slot.days !== '' ? 'has-days' : ''}">
                   <input
                     class="name-input"
                     type="text"
